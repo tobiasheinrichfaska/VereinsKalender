@@ -4,6 +4,13 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 
 export default defineConfig({
   plugins: [react(), viteSingleFile()],
+  build: {
+    rollupOptions: {
+      output: {
+        format: 'iife',
+      },
+    },
+  },
   server: {
     port: 5173,
     strictPort: false,
