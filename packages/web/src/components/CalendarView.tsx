@@ -17,6 +17,7 @@ const locales = {
 };
 
 const localizer = dateFnsLocalizer({
+  format,
   formats: {
     dateFormat: 'dd',
     dayFormat: 'eeee dd',
