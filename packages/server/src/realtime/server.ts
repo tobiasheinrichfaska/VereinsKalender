@@ -158,6 +158,8 @@ export class RealtimeServer {
     const pending = this.pendingChanges.get(changeId);
     if (pending) {
       pending.status = 'acked';
+      // Clean up acked changes to prevent memory leak
+      this.pendingChanges.delete(changeId);
     }
   }
 
@@ -203,6 +205,9 @@ export class RealtimeServer {
         timestamp: Date.now(),
         data: { conflictId, resolution },
       });
+
+      // Clean up resolved conflicts to prevent memory leak
+      this.conflictDetections.delete(conflictId);
     }
   }
 

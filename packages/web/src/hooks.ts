@@ -124,6 +124,25 @@ export function useCalendar() {
     []
   );
 
+  const deleteHoliday = useCallback((id: UUID) => {
+    storage.deleteHoliday(id);
+    setHolidays((prev) => prev.filter((h) => h.id !== id));
+  }, []);
+
+  const addConflictRule = useCallback(
+    (rule: ConflictRule): ConflictRule => {
+      storage.addConflictRule(rule);
+      setConflicts((prev) => [...prev, rule]);
+      return rule;
+    },
+    []
+  );
+
+  const deleteConflictRule = useCallback((id: UUID) => {
+    storage.deleteConflictRule(id);
+    setConflicts((prev) => prev.filter((c) => c.id !== id));
+  }, []);
+
   const filterCalendar = useCallback(
     (options: FilterOptions): CalendarEntry[] => {
       return filterEntries(entries, options);
@@ -170,6 +189,9 @@ export function useCalendar() {
     deleteGroup,
     addRule,
     addHoliday,
+    deleteHoliday,
+    addConflictRule,
+    deleteConflictRule,
     filterCalendar,
     getGroupName,
     getGroupColor,

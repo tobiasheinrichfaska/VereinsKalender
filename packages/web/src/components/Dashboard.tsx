@@ -34,7 +34,7 @@ export function Dashboard({ entries, groups, conflicts, collaborators = [] }: Da
           className={`tab-button ${activeTab === 'analytics' ? 'active' : ''}`}
           onClick={() => setActiveTab('analytics')}
         >
-          Analystics
+          Analytics
         </button>
         <button
           className={`tab-button ${activeTab === 'collaboration' ? 'active' : ''}`}

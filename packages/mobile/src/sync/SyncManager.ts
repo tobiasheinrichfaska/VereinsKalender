@@ -149,12 +149,22 @@ export class SyncManager {
       const existing = await AsyncStorage.getItem('calendarData');
       const localData = existing ? JSON.parse(existing) : {};
 
+      // Merge by ID to avoid duplicates
+      const mergeById = (local: any[], remote: any[]) => {
+        const map = new Map();
+        // Add local items first
+        local.forEach(item => map.set(item.id, item));
+        // Override with remote items (server is source of truth)
+        remote.forEach(item => map.set(item.id, item));
+        return Array.from(map.values());
+      };
+
       const mergedData = {
-        entries: [...(localData.entries || []), ...(data.entries || [])],
-        groups: [...(localData.groups || []), ...(data.groups || [])],
-        rules: [...(localData.rules || []), ...(data.rules || [])],
-        holidays: [...(localData.holidays || []), ...(data.holidays || [])],
-        conflicts: [...(localData.conflicts || []), ...(data.conflicts || [])],
+        entries: mergeById(localData.entries || [], data.entries || []),
+        groups: mergeById(localData.groups || [], data.groups || []),
+        rules: mergeById(localData.rules || [], data.rules || []),
+        holidays: mergeById(localData.holidays || [], data.holidays || []),
+        conflicts: mergeById(localData.conflicts || [], data.conflicts || []),
         lastUpdated: Date.now(),
       };
 

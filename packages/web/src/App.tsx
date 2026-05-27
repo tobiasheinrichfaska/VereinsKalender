@@ -34,7 +34,7 @@ function App() {
   };
 
   const handleCreateEvent = (data: any) => {
-    calendar.addEntry({
+    const entry = calendar.addEntry({
       title: data.title,
       description: data.description,
       startDate: data.startDate,
@@ -43,6 +43,20 @@ function App() {
       groups: data.groups,
       region: data.region,
     });
+
+    // Handle recurrence if specified
+    if (data.isRecurring && data.recurrencePattern) {
+      calendar.addRule({
+        name: data.title,
+        rrule: data.recurrencePattern,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        createdAt: Date.now(),
+      });
+      // Link the entry to the rule by its ruleId
+      // (Note: This would require a schema update to CalendarEntry to support ruleId)
+    }
+
     setShowEventForm(false);
   };
 
@@ -126,10 +140,7 @@ function App() {
             <HolidayManager
               holidays={calendar.holidays}
               onAddHoliday={calendar.addHoliday}
-              onDeleteHoliday={(id) => {
-                // For now, just show a message
-                alert('Holiday deletion not yet implemented');
-              }}
+              onDeleteHoliday={calendar.deleteHoliday}
             />
           </div>
         )}
@@ -139,14 +150,8 @@ function App() {
             <ConflictRuleManager
               conflicts={calendar.conflicts}
               groups={calendar.groups}
-              onAddRule={(rule) => {
-                // For now, just show a message
-                alert('Conflict rule management not yet fully implemented');
-              }}
-              onDeleteRule={(id) => {
-                // For now, just show a message
-                alert('Conflict rule deletion not yet implemented');
-              }}
+              onAddRule={calendar.addConflictRule}
+              onDeleteRule={calendar.deleteConflictRule}
             />
           </div>
         )}

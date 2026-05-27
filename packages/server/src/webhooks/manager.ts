@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import * as crypto from 'node:crypto';
 import {
   WebhookEventType,
   WebhookEvent,
@@ -183,6 +184,7 @@ export class WebhookManager {
             ...webhook.headers,
           },
           timeout: 30000,
+          maxRedirects: 0,
         });
 
         if (response.status >= 200 && response.status < 300) {
@@ -361,7 +363,6 @@ export class WebhookManager {
 
   private generateSignature(event: WebhookEvent): string {
     // In production, use HMAC-SHA256 with a secret key
-    const crypto = require('crypto');
     const data = JSON.stringify(event);
     return crypto.createHash('sha256').update(data).digest('hex');
   }

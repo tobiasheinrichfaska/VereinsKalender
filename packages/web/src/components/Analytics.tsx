@@ -75,7 +75,7 @@ export function Analytics({ entries, groups, conflictCount }: AnalyticsProps) {
 
   return (
     <div className="analytics">
-      <h2>Analystics & Einblicke</h2>
+      <h2>Analytics & Einblicke</h2>
 
       <div className="analytics-grid">
         <div className="metric-card">

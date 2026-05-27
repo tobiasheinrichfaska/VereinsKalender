@@ -249,7 +249,7 @@ export function detectConflicts(
     // Check trigger condition
     let ruleMatches = false;
 
-    if (rule.triggerType === 'dateRange' && rule.condition.startDate) {
+    if (rule.triggerType === 'dateRange' && rule.condition.startDate && rule.condition.endDate) {
       ruleMatches = isDateInRange(parseDate(entry.startDate), {
         startDate: rule.condition.startDate,
         endDate: rule.condition.endDate,

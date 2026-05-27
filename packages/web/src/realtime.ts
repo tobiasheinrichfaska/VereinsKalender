@@ -51,6 +51,8 @@ export class RealtimeClient {
   private conflictCallbacks: Set<ConflictCallback> = new Set();
   private pendingAcks: Map<string, { resolve: () => void; reject: () => void }> = new Map();
   private presenceInterval: number | null = null;
+  private handleMouseMove: (() => void) | null = null;
+  private handleKeyDown: (() => void) | null = null;
   private activeUsers: Map<string, UserPresence> = new Map();
   private messageVersion = 0;
 
@@ -77,7 +79,11 @@ export class RealtimeClient {
         };
 
         this.ws.onmessage = (event) => {
-          this.handleMessage(JSON.parse(event.data));
+          try {
+            this.handleMessage(JSON.parse(event.data));
+          } catch (error) {
+            console.error('Failed to parse WebSocket message:', error);
+          }
         };
 
         this.ws.onerror = (error) => {
@@ -359,13 +365,15 @@ export class RealtimeClient {
     }, 30000);
 
     // Track user activity
-    document.addEventListener('mousemove', () => {
+    this.handleMouseMove = () => {
       this.updatePresence('online');
-    });
+    };
+    document.addEventListener('mousemove', this.handleMouseMove);
 
-    document.addEventListener('keydown', () => {
+    this.handleKeyDown = () => {
       this.updatePresence('online');
-    });
+    };
+    document.addEventListener('keydown', this.handleKeyDown);
   }
 
   /**
@@ -375,6 +383,16 @@ export class RealtimeClient {
     if (this.presenceInterval !== null) {
       clearInterval(this.presenceInterval);
       this.presenceInterval = null;
+    }
+
+    // Remove event listeners
+    if (this.handleMouseMove) {
+      document.removeEventListener('mousemove', this.handleMouseMove);
+      this.handleMouseMove = null;
+    }
+    if (this.handleKeyDown) {
+      document.removeEventListener('keydown', this.handleKeyDown);
+      this.handleKeyDown = null;
     }
 
     // Send offline message

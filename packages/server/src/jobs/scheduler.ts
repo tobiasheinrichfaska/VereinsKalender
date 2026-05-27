@@ -24,7 +24,7 @@ export class JobScheduler {
     handler: () => Promise<void> | void
   ): string {
     try {
-      const id = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const id = `job_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
       const job: ScheduledJob = {
         id,

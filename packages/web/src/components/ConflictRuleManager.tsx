@@ -4,6 +4,7 @@ import {
   Group,
   Severity,
   UUID,
+  generateUUID,
 } from '@vereinskalender/shared';
 import './ConflictRuleManager.css';
 
@@ -39,7 +40,7 @@ const ConflictRuleManager: React.FC<ConflictRuleManagerProps> = ({
     }
 
     const newRule: ConflictRule = {
-      id: Math.random().toString(36).substr(2, 9) as UUID,
+      id: generateUUID(),
       name: formData.name,
       triggerType: formData.triggerType,
       condition: {
