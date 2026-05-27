@@ -76,6 +76,14 @@ VereinsKalender/
 - `packages/web/vite.config.ts` - Build optimization for file:// protocol support
 - Committed: `d6928d7` - "Fix: Add missing date-fns functions to dateFnsLocalizer and optimize build for file:// protocol"
 
+## Done Steps (2026-05-27)
+
+✅ **Project Wrapped Up**
+- Staged and committed all changes: `89838b2` - "chore: Add audit report and update realtime/sync components"
+- Pushed 7 commits to GitHub (master branch)
+- Compiled PSA (web app) as single-file bundle: `packages/web/dist/index.html` (1.03 MB)
+- No server testing required; standalone file:// execution ready
+
 ## Notes
 - Uses npm workspaces for monorepo management
 - Mobile app tested with Expo Go (SDK 54+)
