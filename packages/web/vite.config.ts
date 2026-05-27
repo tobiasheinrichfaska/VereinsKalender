@@ -4,6 +4,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 
 export default defineConfig({
   plugins: [react(), viteSingleFile()],
+  base: './',
   build: {
     rollupOptions: {
       output: {
@@ -13,6 +14,8 @@ export default defineConfig({
     modulePreload: {
       polyfill: false,
     },
+    assetsInlineLimit: 100000000,
+    minify: false,
   },
   server: {
     port: 5173,

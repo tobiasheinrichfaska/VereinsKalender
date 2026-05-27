@@ -7,6 +7,9 @@ import {
   eachDayOfInterval,
   isSameDay,
   format,
+  startOfWeek,
+  getDay,
+  parse,
 } from 'date-fns';
 import { CalendarEntry, Group, formatDate } from '@vereinskalender/shared';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -18,6 +21,9 @@ const locales = {
 
 const localizer = dateFnsLocalizer({
   format,
+  parse,
+  startOfWeek,
+  getDay,
   formats: {
     dateFormat: 'dd',
     dayFormat: 'eeee dd',
