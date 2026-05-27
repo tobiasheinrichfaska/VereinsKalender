@@ -98,11 +98,18 @@ export function expandRule(
   rule: RecurringRule,
   year: number
 ): string[] {
-  const parsed = parseRRule(rule.pattern);
-  const dates: Date[] = [];
   const startDate = parseDate(rule.startDate);
   const endDate = rule.endDate ? parseDate(rule.endDate) : new Date(year, 11, 31);
   const exceptions = new Set(rule.exceptions);
+
+  // Check for complex pattern first
+  const complexParsed = parseComplexPattern(rule.pattern);
+  if (complexParsed) {
+    return expandComplexRule(complexParsed, startDate, endDate, exceptions);
+  }
+
+  const parsed = parseRRule(rule.pattern);
+  const dates: Date[] = [];
 
   const current = new Date(startDate);
 
@@ -177,6 +184,161 @@ export function expandRule(
   }
 
   return dates.map(formatDate).sort();
+}
+
+// Complex scheduling rule expansion
+interface ComplexRuleParams {
+  type: string;
+  weekdays?: string[];
+  nthOccurrence?: number;
+  frequency?: string;
+  skipHolidays?: boolean;
+  skipSchoolBreak?: boolean;
+  month?: string;
+  period?: string;
+  referenceEvent?: string;
+}
+
+function parseComplexPattern(pattern: string): ComplexRuleParams | null {
+  if (!pattern.includes(':')) return null;
+
+  const parts = pattern.split(':');
+  const type = parts[0];
+  const params = new Map<string, string>();
+
+  parts.slice(1).forEach(part => {
+    const [key, value] = part.split('=');
+    if (key && value) params.set(key, value);
+  });
+
+  return {
+    type,
+    weekdays: params.get('WEEKDAYS')?.split(','),
+    nthOccurrence: params.get('NTH') ? parseInt(params.get('NTH')!) : undefined,
+    frequency: params.get('FREQ'),
+    skipHolidays: params.get('SKIP_HOLIDAYS') === 'true',
+    skipSchoolBreak: params.get('SKIP_SCHOOL') === 'true',
+    month: params.get('MONTH'),
+    period: params.get('PERIOD'),
+    referenceEvent: params.get('REF'),
+  };
+}
+
+function dayNameToDayNumMap(dayName: string): number {
+  const map: Record<string, number> = { MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6, SU: 0 };
+  return map[dayName] || 0;
+}
+
+function getNthWeekdayOfMonth(year: number, month: number, weekday: number, n: number): Date {
+  const first = new Date(Date.UTC(year, month - 1, 1));
+  let count = 0;
+  const current = new Date(first);
+
+  while (current.getUTCMonth() === month - 1) {
+    if (current.getUTCDay() === weekday) {
+      count++;
+      if (count === n) return new Date(current);
+    }
+    current.setUTCDate(current.getUTCDate() + 1);
+  }
+
+  return new Date(Date.UTC(year, month - 1, 1)); // fallback
+}
+
+function getLastWeekdayOfMonth(year: number, month: number, weekday: number): Date {
+  const last = new Date(Date.UTC(year, month, 0));
+  const current = new Date(last);
+
+  while (current.getUTCDay() !== weekday) {
+    current.setUTCDate(current.getUTCDate() - 1);
+  }
+
+  return current;
+}
+
+function expandComplexRule(
+  parsed: ComplexRuleParams,
+  startDate: Date,
+  endDate: Date,
+  exceptions: Set<string>
+): string[] {
+  const dates: string[] = [];
+
+  if (parsed.type === 'LAST_WEEKDAYS') {
+    // Last Tue-Fri in a specific period (e.g., summer break)
+    const weekdays = parsed.weekdays?.map(dayNameToDayNumMap) || [2, 3, 4, 5];
+    let current = new Date(startDate);
+
+    while (current <= endDate) {
+      if (weekdays.includes(current.getUTCDay())) {
+        const dateStr = formatDate(current);
+        if (!exceptions.has(dateStr)) {
+          dates.push(dateStr);
+        }
+      }
+      current.setUTCDate(current.getUTCDate() + 1);
+    }
+  }
+  else if (parsed.type === 'FIRST_AVAILABLE_WEEKDAY') {
+    // First available weekday in month, skipping holidays/breaks
+    const weekday = parsed.weekdays?.[0] ? dayNameToDayNumMap(parsed.weekdays[0]) : 2;
+    const year = startDate.getUTCFullYear();
+
+    for (let m = startDate.getUTCMonth() + 1; m <= 12 && m <= endDate.getUTCMonth() + 1; m++) {
+      const firstDay = new Date(Date.UTC(year, m - 1, 1));
+      let current = new Date(firstDay);
+
+      while (current.getUTCMonth() === m - 1) {
+        if (current.getUTCDay() === weekday) {
+          const dateStr = formatDate(current);
+          if (!exceptions.has(dateStr) && current >= startDate && current <= endDate) {
+            dates.push(dateStr);
+            break;
+          }
+        }
+        current.setUTCDate(current.getUTCDate() + 1);
+      }
+    }
+  }
+  else if (parsed.type === 'NTH_WEEKDAY_BIMONTHLY') {
+    // Nth weekday every 2 months (e.g., 3rd Thursday)
+    const n = parsed.nthOccurrence || 3;
+    const weekday = parsed.weekdays?.[0] ? dayNameToDayNumMap(parsed.weekdays[0]) : 4;
+    let current = new Date(startDate);
+    let monthCount = 0;
+
+    while (current <= endDate) {
+      if (monthCount % 2 === 0) {
+        const candidate = getNthWeekdayOfMonth(current.getUTCFullYear(), current.getUTCMonth() + 1, weekday, n);
+        if (candidate >= startDate && candidate <= endDate) {
+          const dateStr = formatDate(candidate);
+          if (!exceptions.has(dateStr)) {
+            dates.push(dateStr);
+          }
+        }
+      }
+      current.setUTCMonth(current.getUTCMonth() + 2);
+      monthCount++;
+    }
+  }
+  else if (parsed.type === 'FIRST_AFTER_PERIOD') {
+    // First weekday after a period (e.g., after summer break)
+    const weekday = parsed.weekdays?.[0] ? dayNameToDayNumMap(parsed.weekdays[0]) : 6;
+    let current = new Date(startDate);
+
+    while (current <= endDate) {
+      if (current.getUTCDay() === weekday) {
+        const dateStr = formatDate(current);
+        if (!exceptions.has(dateStr)) {
+          dates.push(dateStr);
+          break;
+        }
+      }
+      current.setUTCDate(current.getUTCDate() + 1);
+    }
+  }
+
+  return dates.sort();
 }
 
 // Filtering

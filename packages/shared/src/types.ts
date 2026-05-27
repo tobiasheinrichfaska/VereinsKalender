@@ -17,6 +17,8 @@ export interface CalendarEntry {
   description: string;
   startDate: string; // ISO 8601
   endDate: string; // ISO 8601
+  startTime?: string; // HH:MM (optional)
+  endTime?: string; // HH:MM (optional)
   type: EventType;
   groups: UUID[];
   ruleId?: UUID;
@@ -100,6 +102,8 @@ export interface CreateEntryRequest {
   description: string;
   startDate: string;
   endDate: string;
+  startTime?: string; // HH:MM
+  endTime?: string; // HH:MM
   type: EventType;
   groups: UUID[];
   ruleId?: UUID;
