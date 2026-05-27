@@ -206,19 +206,23 @@ function parseComplexPattern(pattern: string): ComplexRuleParams | null {
   const type = parts[0];
   const params = new Map<string, string>();
 
-  parts.slice(1).forEach(part => {
+  // Handle both ; and : as separators
+  const allParts = pattern.split(/[;:]/).slice(1);
+  allParts.forEach(part => {
     const [key, value] = part.split('=');
     if (key && value) params.set(key, value);
   });
 
   return {
     type,
-    weekdays: params.get('WEEKDAYS')?.split(','),
-    nthOccurrence: params.get('NTH') ? parseInt(params.get('NTH')!) : undefined,
+    weekdays: params.get('WEEKDAY') ? [params.get('WEEKDAY')!] : params.get('WEEKDAYS')?.split(','),
+    nthOccurrence: params.get('NTH_WEEKDAY')
+      ? (params.get('NTH_WEEKDAY') === 'LAST' ? -1 : parseInt(params.get('NTH_WEEKDAY')!))
+      : params.get('NTH') ? parseInt(params.get('NTH')!) : undefined,
     frequency: params.get('FREQ'),
     skipHolidays: params.get('SKIP_HOLIDAYS') === 'true',
     skipSchoolBreak: params.get('SKIP_SCHOOL') === 'true',
-    month: params.get('MONTH'),
+    month: params.get('MONTHS'),
     period: params.get('PERIOD'),
     referenceEvent: params.get('REF'),
   };
@@ -256,6 +260,25 @@ function getLastWeekdayOfMonth(year: number, month: number, weekday: number): Da
   return current;
 }
 
+// Rule builder helpers for smart patterns
+export interface SmartRuleConfig {
+  type: 'nth_weekday_months'; // e.g., "first Thursday in Jan, Mar, May"
+  nthOccurrence: number; // 1-5 or -1 for last
+  weekday: string; // MO, TU, WE, TH, FR, SA, SU
+  selectedMonths: number[]; // 1-12
+  skipHolidays?: boolean;
+}
+
+export function buildSmartPattern(config: SmartRuleConfig): string {
+  if (config.type === 'nth_weekday_months') {
+    const months = config.selectedMonths.join(',');
+    const nth = config.nthOccurrence === -1 ? 'LAST' : config.nthOccurrence;
+    const skip = config.skipHolidays ? ';SKIP_HOLIDAYS=true' : '';
+    return `SMART:NTH_WEEKDAY=${nth};WEEKDAY=${config.weekday};MONTHS=${months}${skip}`;
+  }
+  return '';
+}
+
 function expandComplexRule(
   parsed: ComplexRuleParams,
   startDate: Date,
@@ -264,7 +287,37 @@ function expandComplexRule(
 ): string[] {
   const dates: string[] = [];
 
-  if (parsed.type === 'LAST_WEEKDAYS') {
+  if (parsed.type === 'SMART') {
+    // Handle SMART:NTH_WEEKDAY=1;WEEKDAY=TH;MONTHS=1,3,5
+    const nthOccurrence = parsed.nthOccurrence || 1;
+    const weekday = parsed.weekdays?.[0] ? dayNameToDayNumMap(parsed.weekdays[0]) : 4;
+    const months = parsed.month ? parsed.month.split(',').map(Number) : Array.from({ length: 12 }, (_, i) => i + 1);
+
+    const startYear = startDate.getUTCFullYear();
+    const endYear = endDate.getUTCFullYear();
+
+    for (let year = startYear; year <= endYear; year++) {
+      for (const month of months) {
+        let candidate: Date;
+
+        if (nthOccurrence === -1) {
+          // Last occurrence
+          candidate = getLastWeekdayOfMonth(year, month, weekday);
+        } else {
+          // Nth occurrence
+          candidate = getNthWeekdayOfMonth(year, month, weekday, nthOccurrence);
+        }
+
+        if (candidate >= startDate && candidate <= endDate) {
+          const dateStr = formatDate(candidate);
+          if (!exceptions.has(dateStr)) {
+            dates.push(dateStr);
+          }
+        }
+      }
+    }
+  }
+  else if (parsed.type === 'LAST_WEEKDAYS') {
     // Last Tue-Fri in a specific period (e.g., summer break)
     const weekdays = parsed.weekdays?.map(dayNameToDayNumMap) || [2, 3, 4, 5];
     let current = new Date(startDate);
