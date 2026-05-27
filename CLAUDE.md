@@ -51,7 +51,33 @@ VereinsKalender/
 - [ ] Data storage layer (local + Nextcloud)
 - [ ] Demo calendar data
 
+## Recent Fixes (2026-05-27)
+
+### Issue: TypeError in CalendarView component
+**Problem:** `startOfWeek2 is not a function` error when rendering calendar
+**Root Cause:** Missing date-fns functions in `dateFnsLocalizer` configuration
+**Fix Applied:**
+- Added imports: `startOfWeek`, `getDay`, `parse` from date-fns
+- Updated localizer config in CalendarView.tsx to include these functions
+- Disabled Vite minification to prevent variable name obfuscation
+- Set `base: './'` for relative path resolution
+
+**Build Changes:**
+- `vite.config.ts`: Set `minify: false`, `base: './'`, `assetsInlineLimit: 100000000`
+- Output: 1.03 MB single-file bundle (readable without minification)
+
+**Verification Status:**
+- ✅ App renders UI correctly (calendar, navigation, filters visible)
+- ⚠️ Cannot definitively verify console for errors (DevTools check failed)
+- ⚠️ Interactive testing incomplete
+
+### File Modified
+- `packages/web/src/components/CalendarView.tsx` - Added missing date-fns imports and localizer config
+- `packages/web/vite.config.ts` - Build optimization for file:// protocol support
+- Committed: `d6928d7` - "Fix: Add missing date-fns functions to dateFnsLocalizer and optimize build for file:// protocol"
+
 ## Notes
 - Uses npm workspaces for monorepo management
 - Mobile app tested with Expo Go (SDK 54+)
 - Shared package provides types and utilities for both platforms
+- Web app now runnable as standalone file:// without server (after fixes)
