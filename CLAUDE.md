@@ -26,15 +26,20 @@ VereinsKalender/
 ```
 
 ## Technology Stack
-- **Frontend (Web)**: React 19, Vite
+- **Frontend (Web)**: React 19 + Vite (single-file build via `vite-plugin-singlefile`)
 - **Mobile**: React Native 0.81, Expo 56
 - **Shared**: TypeScript, shared utilities library
 - **Storage**: Local + optional Nextcloud
 - **Export**: iCalendar (ICS) format, Excel support
 
+## Build & Distribution
+- **PC/Web**: `npm run web:build` → `dist/index.html` (~417 kB) — single-file bundle for standalone distribution
+- **Mobile**: `npm run mobile:dev` / `npm run mobile:android` / `npm run mobile:ios` — Expo builds for App Store/Play Store
+- **All**: `npm run build:all` → shared + web + server
+
 ## Development
 - `npm install` at root (installs all workspaces)
-- `npm run web:dev` - Start web dev server
+- `npm run web:dev` - Start web dev server (localhost:5173)
 - `npm run mobile:dev` - Start Expo dev server
 - `npm run shared:build` - Build shared package
 

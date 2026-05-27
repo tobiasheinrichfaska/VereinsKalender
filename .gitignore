@@ -1,0 +1,19 @@
+# Build output
+dist/
+**/dist/
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Claude Code
+.claude/
+
+# Local env / secrets
+.env
+.env.local
+*.local.json
+
+# IDE
+.DS_Store
+.vscode/settings.local.json
