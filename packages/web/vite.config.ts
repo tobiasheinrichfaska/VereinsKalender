@@ -10,6 +10,9 @@ export default defineConfig({
         format: 'iife',
       },
     },
+    modulePreload: {
+      polyfill: false,
+    },
   },
   server: {
     port: 5173,
