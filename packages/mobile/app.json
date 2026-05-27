@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "VereinsKalender",
+    "slug": "vereinskalender",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.vereinskalender.app"
+    },
+    "android": {
+      "package": "com.vereinskalender.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icons": ["./assets/notification-icon.png"]
+        }
+      ]
+    ]
+  }
+}

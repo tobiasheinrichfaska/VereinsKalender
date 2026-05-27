@@ -9,15 +9,28 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:android": "eas build --platform android",
-    "build:ios": "eas build --platform ios"
+    "build:ios": "eas build --platform ios",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "expo": "^56.0.0",
+    "expo-notifications": "^0.27.0",
+    "expo-navigation-bar": "^2.3.0",
+    "@react-navigation/native": "^6.1.0",
+    "@react-navigation/bottom-tabs": "^6.5.0",
+    "@react-navigation/native-stack": "^6.9.0",
     "react": "^19.0.0",
     "react-native": "^0.81.0",
     "react-native-screens": "^4.16.0",
-    "safe-area-context": "^5.6.0",
+    "react-native-gesture-handler": "^2.14.0",
+    "react-native-safe-area-context": "^5.6.0",
+    "@react-native-async-storage/async-storage": "^1.21.0",
     "@vereinskalender/shared": "workspace:*"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-native": "^0.81.0",
+    "babel-preset-expo": "^10.0.0"
+  }
 }

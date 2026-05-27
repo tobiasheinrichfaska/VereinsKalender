@@ -1,0 +1,83 @@
+.holiday-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.manager-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.region-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.region-tab {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: #64748b;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.region-tab:hover {
+  color: #1e293b;
+  background: #f8fafc;
+}
+
+.region-tab.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.holiday-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.holiday-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.holiday-item:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.holiday-info {
+  flex: 1;
+}
+
+.holiday-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.holiday-info p {
+  margin: 0;
+}
+
+.holiday-item .btn {
+  flex-shrink: 0;
+}
