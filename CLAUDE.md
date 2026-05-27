@@ -1,5 +1,7 @@
 # VereinsKalender - Schedule Management System
 
+> **General workspace information:** See [`c:\skripte\private\general stuff\CLAUDE.md`](../../private/general%20stuff/CLAUDE.md) for language, git conventions, versioning, build rules, Python/VS Code setup, and licensing.
+
 ## Project Overview
 A cross-platform schedule management system for organization groups with complex scheduling patterns and regional restrictions.
 
