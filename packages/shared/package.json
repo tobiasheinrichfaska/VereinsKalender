@@ -1,0 +1,16 @@
+{
+  "name": "@vereinskalender/shared",
+  "version": "0.1.0",
+  "description": "Shared utilities and types for VereinsKalender",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

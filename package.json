@@ -1,0 +1,19 @@
+{
+  "name": "vereinskalender",
+  "version": "0.1.0",
+  "description": "Schedule management system for organization groups with multi-platform support",
+  "private": true,
+  "workspaces": [
+    "packages/web",
+    "packages/mobile",
+    "packages/shared"
+  ],
+  "scripts": {
+    "web:dev": "cd packages/web && npm run dev",
+    "web:build": "cd packages/web && npm run build",
+    "mobile:dev": "cd packages/mobile && npx expo start",
+    "mobile:build": "cd packages/mobile && npx expo build",
+    "shared:build": "cd packages/shared && npm run build"
+  },
+  "devDependencies": {}
+}

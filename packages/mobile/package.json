@@ -1,0 +1,23 @@
+{
+  "name": "@vereinskalender/mobile",
+  "version": "0.1.0",
+  "description": "React Native + Expo mobile application for schedule management",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build:android": "eas build --platform android",
+    "build:ios": "eas build --platform ios"
+  },
+  "dependencies": {
+    "expo": "^56.0.0",
+    "react": "^19.0.0",
+    "react-native": "^0.81.0",
+    "react-native-screens": "^4.16.0",
+    "safe-area-context": "^5.6.0",
+    "@vereinskalender/shared": "workspace:*"
+  },
+  "devDependencies": {}
+}
